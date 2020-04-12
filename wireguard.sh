@@ -230,12 +230,15 @@ check_kernel_version() {
 
 # Install wireguard module from source
 install_wg_module() {
+    pwd
     get_latest_module_ver
     wireguard_name="wireguard-linux-compat-$(echo ${wireguard_ver} | grep -oE '[0-9.]+')"
-    wireguard_url="https://github.com/WireGuard/wireguard-linux-compat/archive/${wireguard_ver}.tar.gz"
+    echo wireguard_name
+    # wireguard_url="https://github.com/WireGuard/wireguard-linux-compat/archive/${wireguard_ver}.tar.gz"
+    wireguard_url="https://git.zx2c4.com/wireguard-linux-compat/snapshot/${wireguard_ver}.zip"
     cd ${cur_dir}
-    _error_detect "wget --no-check-certificate -qO ${wireguard_name}.tar.gz ${wireguard_url}"
-    _error_detect "tar zxf ${wireguard_name}.tar.gz"
+    _error_detect "wget --no-check-certificate -qO ${wireguard_name}.zip ${wireguard_url}"
+    _error_detect "unzip ${wireguard_name}.zip"
     _error_detect "cd ${wireguard_name}/src"
     _error_detect "make"
     _error_detect "make install"
@@ -246,10 +249,11 @@ install_wg_module() {
 install_wg_tools() {
     get_latest_tools_ver
     wireguard_tools_name="wireguard-tools-$(echo ${wireguard_tools_ver} | grep -oE '[0-9.]+')"
-    wireguard_tools_url="https://github.com/WireGuard/wireguard-tools/archive/${wireguard_tools_ver}.tar.gz"
+    echo wireguard_tools_name
+    wireguard_tools_url="https://git.zx2c4.com/wireguard-tools/snapshot/${wireguard_tools_ver}.zip"
     cd ${cur_dir}
-    _error_detect "wget --no-check-certificate -qO ${wireguard_tools_name}.tar.gz ${wireguard_tools_url}"
-    _error_detect "tar zxf ${wireguard_tools_name}.tar.gz"
+    _error_detect "wget --no-check-certificate -qO ${wireguard_tools_name}.zip ${wireguard_tools_url}"
+    _error_detect "unzip ${wireguard_tools_name}.zip"
     _error_detect "cd ${wireguard_tools_name}/src"
     _error_detect "make"
     _error_detect "make install"
@@ -821,17 +825,26 @@ install_from_repo() {
 install_from_source() {
     _is_installed
     rt=$?
+    echo "1 rt value is " $rt
     if [ ${rt} -eq 0 ]; then
         _red "WireGuard was already installed\n" && exit 0
     fi
+    echo "2 rt value is " $rt
     check_os
+    echo "3 rt value is " $rt
+    echo check_os_return $?
     if check_kernel_version; then
-        if [ ${rt} -eq 2 ]; then
+        echo kernel version return_value $?
+        echo "4 rt value is " $rt
+        # if [ ${rt} -eq 2 ]; then
+            echo "install_wg_4"
             install_wg_4
-        else
-            _error "WireGuard module does not exists, please check your kernel"
-        fi
+        # else
+            echo "something error"
+            # _error "WireGuard module does not exists, please check your kernel"
+        # fi
     else
+        echo "install_wg_2"
         install_wg_2
     fi
     create_server_if
@@ -893,6 +906,7 @@ main() {
             install_from_repo
             ;;
         -s|--source)
+            echo install_from_source
             install_from_source
             ;;
         -u|--update)
