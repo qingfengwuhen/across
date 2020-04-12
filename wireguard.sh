@@ -254,6 +254,7 @@ install_wg_tools() {
     cd ${cur_dir}
     _error_detect "wget --no-check-certificate -qO ${wireguard_tools_name}.zip ${wireguard_tools_url}"
     _error_detect "unzip ${wireguard_tools_name}.zip"
+    mv v* ${wireguard_tools_name}
     _error_detect "cd ${wireguard_tools_name}/src"
     _error_detect "make"
     _error_detect "make install"
